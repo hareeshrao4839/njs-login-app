@@ -6,7 +6,7 @@ metadata:
   labels:
 {{ include "app.labels" . | indent 4}}  
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
 {{ include "selector.labels" . | indent 6}}
