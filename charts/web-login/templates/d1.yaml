@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name}}
+  namespace: {{ .Release.Namespace}}
+  labels:
+{{ include "app.labels" . | indent 4}}  
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+{{ include "selector.labels" . | indent 6}}
+  template:
+    metadata:
+      labels:
+{{ include "selector.labels" . | indent 8}}
+{{- if .Values.vault.enabled}}
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/role: "my-role"
+        vault.hashicorp.com/agent-inject-secret-my-secret: "secret/data/my-secret"
+    {{- end }}    
+    spec:
+      serviceAccountName: {{ .Chart.Name}}-sa
+      containers:
+      - name: {{ .Values.App.Name}}
+        image: "{{ .Values.image.name}}:{{ .Values.image.tag}}"
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: MY_KEY
+          value: test
+        ports:
+        - containerPort: {{ .Values.Port.Number}}
+          name: {{ .Values.Port.Name}}
+        resources:
+          requests:
+            memory: "{{ .Values.resources.req.mem}}"
+            cpu: "{{ .Values.resources.req.cpu}}"
+          limits:
+            memory: "{{ .Values.resources.lim.mem}}"
+            cpu: "{{ .Values.resources.lim.cpu}}"
+        {{- if .Values.volumesState.enabled}}    
+        {{- with  .Values.volumeMounts}}
+        volumeMounts:
+          {{- toYaml . | nindent 8 }}  
+        {{- end }}
+        {{- end }}  
+{{- if .Values.volumesState.enabled}}
+      {{- with  .Values.volumes}}      
+      volumes:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- end }}
