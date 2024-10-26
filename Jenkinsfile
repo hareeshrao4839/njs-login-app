@@ -1,14 +1,14 @@
 pipeline {
 
     environment {
-       imageName="drop1/numeric"
+       imageName="drop1/web-login"
        DOCKERHUB_CREDENTIALS= "mydkr-pat"
        PROJECT_ID="compelling-cat-431716-m7"
        CLUSTER_NAME="autopilot-cluster-1"
        location="us-central1"
        GCP_CREDENTIALS_ID="stb-sa"
-       HELM_RELEASE = 'numeric'
-       HELM_CHART_PATH = './charts/numeric'
+       HELM_RELEASE = 'web-login'
+       HELM_CHART_PATH = './charts/web-login'
        HELM_VALUES_PATH = './h-override/override-values.yaml'
        NAMESPACE = 'default'
 
@@ -38,7 +38,7 @@ pipeline {
               script {
                 sh """
                 #/!bin/bash
-                helm template numeric-v1 charts/numeric \
+                helm template web-login-v1 charts/web-login \
                 -f h-override/override-values.yaml \
                 --set image.tag="${env.BUILD_NUMBER}"
                 """

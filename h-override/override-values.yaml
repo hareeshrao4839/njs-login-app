@@ -46,10 +46,10 @@ volumeMounts:
 volumes:
   - name: certs
     secret:
-      secretName: numeric-secret
+      secretName: web-login-secret
   - name: conf
     configMap:
-      name: numeric-cm   
+      name: web-login-cm   
 
 vault:
   enabled: false
